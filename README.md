@@ -1,4 +1,8 @@
-# 🌧️ Prakiraan Banjir Sungai Probabilistik dengan Ensemble di HPC
+| **Nama** | Diosi Putri Arlita |
+|---|---|
+| **NPM** | G1A023012 |
+
+# Prakiraan Banjir Sungai Probabilistik dengan Ensemble di HPC
 
 > **Studi kasus** berdasarkan kuliah umum *"Bridging Global Infrastructure to Address Local Challenge with HPC"*
 > (Asst. Prof. Dr. Worawan Diaz Carballo, Thammasat University, 5 Okt 2026).
