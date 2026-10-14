@@ -1,4 +1,3 @@
-"""Evaluasi prakiraan + grafik dari results/sweep.csv. Jalankan dari root repo."""
 import sys
 from pathlib import Path
 
@@ -9,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from floodcast import Params, run_event, FLOOD_STAGE_M  # noqa: E402
+from floodcast import Params, run_event, FLOOD_STAGE_M
 
 out = Path("results"); out.mkdir(exist_ok=True)
 csv = sys.argv[1] if len(sys.argv) > 1 else "results/sweep.csv"
@@ -25,7 +24,6 @@ def verify(g, thr):
     return dict(POD=hit / max(hit + miss, 1), FAR=fa / max(hit + fa, 1), CSI=hit / max(hit + miss + fa, 1))
 
 
-# ---- tabel ringkasan per konfigurasi (ambang peringatan 30%)
 rows = []
 for (fe, oh), g in df.groupby(["forecast_error", "obs_hours"]):
     v = verify(g, 0.3)
@@ -38,7 +36,7 @@ print(f"Kejadian: {len(df)} | frekuensi banjir: {df.truth_flood.mean():.1%}")
 print("\nRINGKASAN (ambang peringatan p>=30%):")
 print(summ.round(2).to_string(index=False))
 
-# ---- Gambar 1: contoh satu kejadian
+
 ref = df[(df.forecast_error == 0.4) & (df.obs_hours == 6) & df.truth_flood & df.p_exceed.between(0.4, 0.9)]
 seed = int(ref.sort_values("truth_peak_stage").iloc[len(ref) // 2].seed)
 r = run_event(Params(seed=seed, forecast_error=0.4, obs_hours=6), return_state=True)
@@ -54,7 +52,7 @@ a2.axvline(6, c="gray", ls=":"); a2.text(6.5, a2.get_ylim()[1] * .92, "peringata
 a2.set_xlim(0, 80); a2.set_xlabel("Jam sejak hujan mulai"); a2.set_ylabel("Muka air di kota (m)")
 a2.legend(fontsize=8); a2.grid(alpha=.3); fig.tight_layout(); fig.savefig(out / "example_event.png", dpi=150)
 
-# ---- Gambar 2: diagram reliabilitas (kalibrasi)
+
 fig, ax = plt.subplots(figsize=(5.5, 5))
 bins = np.linspace(0, 1, 11)
 for fe in sorted(df.forecast_error.unique()):
@@ -66,7 +64,7 @@ ax.plot([0, 1], [0, 1], "k--", lw=1); ax.set_xlabel("Peluang banjir diprakirakan
 ax.set_title("Reliabilitas prakiraan (jam ke-6)"); ax.legend(fontsize=8); ax.grid(alpha=.3)
 fig.tight_layout(); fig.savefig(out / "reliability.png", dpi=150)
 
-# ---- Gambar 3: kapan memberi peringatan? kemampuan vs waktu tunggu
+
 fig, (a1, a2) = plt.subplots(1, 2, figsize=(11, 4.2))
 for fe, g in summ.groupby("forecast_error"):
     a1.plot(g.obs_hours, g.CSI, marker="o", label=f"sigma={fe}")
@@ -77,11 +75,11 @@ a1.set_title("Menunggu data lebih lama -> prakiraan lebih tepat"); a2.set_title(
 for a in (a1, a2): a.grid(alpha=.3); a.legend(fontsize=8)
 fig.tight_layout(); fig.savefig(out / "skill_vs_leadtime.png", dpi=150)
 
-# ---- Gambar 4: ambang peringatan optimal menurut rasio biaya/kerugian
+
 g = df[(df.forecast_error == 0.4) & (df.obs_hours == 6)]
 fig, ax = plt.subplots(figsize=(7.5, 4.8))
 opt = {}
-for alpha in (0.05, 0.1, 0.2, 0.4):   # alpha = biaya peringatan / kerugian jika banjir tanpa peringatan
+for alpha in (0.05, 0.1, 0.2, 0.4):
     cost = []
     for th in THR:
         al = g.p_exceed >= th

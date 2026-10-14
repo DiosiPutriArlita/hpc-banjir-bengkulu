@@ -1,8 +1,7 @@
-"""Ukur speed-up multiprocessing: waktu vs jumlah worker. Jalankan dari root repo."""
 import os, sys, time
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from floodcast.sweep import build_scenarios, run_mp, run_serial  # noqa: E402
+from floodcast.sweep import build_scenarios, run_mp, run_serial
 import pandas as pd
 
 sc = build_scenarios("demo")[:400]

@@ -1,10 +1,3 @@
-"""
-Sweep: banyak kejadian hujan x konfigurasi prakiraan. Tiap kejadian independen
--> "embarrassingly parallel".
-
-  python -m floodcast.sweep --preset demo --backend mp --workers 4
-  srun python -m floodcast.sweep --preset full --backend mpi
-"""
 from __future__ import annotations
 
 import argparse
@@ -49,7 +42,7 @@ def run_mpi(sc):
     from mpi4py import MPI
     comm = MPI.COMM_WORLD
     rank, size = comm.Get_rank(), comm.Get_size()
-    mine = [_run(p) for p in sc[rank::size]]          # round-robin
+    mine = [_run(p) for p in sc[rank::size]]
     gathered = comm.gather(mine, root=0)
     return None if rank != 0 else [r for part in gathered for r in part]
 
